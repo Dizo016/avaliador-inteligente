@@ -22,4 +22,12 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     private TipoUsuario tipoUsuario;
+
+    public boolean isProfessor() {
+        return this.getTipoUsuario() == TipoUsuario.PROFESSOR;
+    }
+
+    public boolean isAluno() {
+        return this.getTipoUsuario() == TipoUsuario.ALUNO;
+    }
 }
