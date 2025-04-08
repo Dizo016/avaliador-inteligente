@@ -1,6 +1,7 @@
 package com.ucsal.avaliador_inteligente.service;
 
 import com.ucsal.avaliador_inteligente.dto.AlternativaDTO;
+import com.ucsal.avaliador_inteligente.dto.ProvaRequestDTO;
 import com.ucsal.avaliador_inteligente.dto.QuestaoComAlternativasDTO;
 import com.ucsal.avaliador_inteligente.model.Prova;
 import com.ucsal.avaliador_inteligente.repository.ProvaRepository;
@@ -26,5 +27,11 @@ public class ProvaService {
 
             return new QuestaoComAlternativasDTO(q.getId(), q.getEnunciado(), alternativas);
         }).toList();
+    }
+
+    public Prova cadastrarProva(ProvaRequestDTO dto) {
+        Prova prova = new Prova();
+        prova.setTitulo(dto.getTitulo());
+        return provaRepository.save(prova);
     }
 }
