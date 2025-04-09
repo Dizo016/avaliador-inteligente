@@ -26,19 +26,16 @@ public class Prova {
     @JoinColumn(name = "criador_id")
     private Usuario criador;
 
-    @ManyToMany
-    @JoinTable(
-            name = "prova_questoes_tb",
-            joinColumns = @JoinColumn(name = "prova_id"),
-            inverseJoinColumns = @JoinColumn(name = "questao_id")
-    )
+    @OneToMany(mappedBy = "prova", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Questao> questoes = new ArrayList<>();
 
     public void adicionarQuestao(Questao questao) {
+        questao.setProva(this);
         this.questoes.add(questao);
     }
 
     public void removerQuestao(Questao questao) {
+        questao.setProva(null);
         this.questoes.remove(questao);
     }
 }

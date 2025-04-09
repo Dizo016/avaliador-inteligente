@@ -25,6 +25,10 @@ public class Questao {
     @JoinColumn(name = "criador_id")
     private Usuario criador;
 
+    @ManyToOne
+    @JoinColumn(name = "prova_id")
+    private Prova prova;
+
     @OneToMany(mappedBy = "questao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Alternativa> alternativas = new ArrayList<>();
 
