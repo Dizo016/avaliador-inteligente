@@ -1,5 +1,6 @@
 package com.ucsal.avaliador_inteligente.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class Questao {
 
     @ManyToOne
     @JoinColumn(name = "prova_id")
+    @JsonBackReference
     private Prova prova;
 
     @OneToMany(mappedBy = "questao", cascade = CascadeType.ALL, orphanRemoval = true)
