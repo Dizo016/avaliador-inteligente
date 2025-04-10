@@ -1,6 +1,8 @@
 package com.ucsal.avaliador_inteligente.service;
 
+import com.ucsal.avaliador_inteligente.dto.AlternativaDTO;
 import com.ucsal.avaliador_inteligente.dto.AlternativaRequestDTO;
+import com.ucsal.avaliador_inteligente.dto.QuestaoDetalhadaDTO;
 import com.ucsal.avaliador_inteligente.dto.QuestaoRequestDTO;
 import com.ucsal.avaliador_inteligente.model.Alternativa;
 import com.ucsal.avaliador_inteligente.model.Prova;
@@ -11,12 +13,31 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class QuestaoService {
 
     private final QuestaoRepository questaoRepository;
     private final ProvaRepository provaRepository;
+
+    public QuestaoDetalhadaDTO buscarPorId(Long id) {
+        Questao questao = questaoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Questão não encontrada!"));
+
+        List<AlternativaDTO> alternativas = questao.getAlternativas().stream()
+                .map(a -> new AlternativaDTO(a.getId(), a.getLetra(), a.getTexto()))
+                .toList();
+
+        return new QuestaoDetalhadaDTO(
+                questao.getId(),
+                questao.getEnunciado(),
+                questao.getRespostaCorreta(),
+                alternativas
+        );
+    }
+
 
     public Questao cadastrarQuestao(QuestaoRequestDTO dto) {
         Prova prova = provaRepository.findById(dto.getProvaId())

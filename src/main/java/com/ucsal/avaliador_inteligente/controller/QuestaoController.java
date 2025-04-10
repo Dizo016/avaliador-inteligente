@@ -1,6 +1,7 @@
 package com.ucsal.avaliador_inteligente.controller;
 
 import com.ucsal.avaliador_inteligente.dto.AlternativaRequestDTO;
+import com.ucsal.avaliador_inteligente.dto.QuestaoDetalhadaDTO;
 import com.ucsal.avaliador_inteligente.dto.QuestaoRequestDTO;
 import com.ucsal.avaliador_inteligente.dto.RespostaCorretaDTO;
 import com.ucsal.avaliador_inteligente.model.Questao;
@@ -15,6 +16,12 @@ import org.springframework.web.bind.annotation.*;
 public class QuestaoController {
 
     private final QuestaoService questaoService;
+
+    @GetMapping("/{questaoId}")
+    public ResponseEntity<QuestaoDetalhadaDTO> buscarPorId(@PathVariable Long questaoId) {
+        QuestaoDetalhadaDTO dto = questaoService.buscarPorId(questaoId);
+        return ResponseEntity.ok(dto);
+    }
 
     @PostMapping
     public ResponseEntity<Questao> cadastrar(@RequestBody QuestaoRequestDTO dto) {
