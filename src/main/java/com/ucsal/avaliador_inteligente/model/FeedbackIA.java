@@ -1,5 +1,6 @@
 package com.ucsal.avaliador_inteligente.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class FeedbackIA {
 
     @OneToOne
     @JoinColumn(name = "resposta_aluno_id")
+    @JsonIgnore
     private RespostaAluno respostaAluno;
 
     @OneToMany(mappedBy = "feedbackIA", cascade = CascadeType.ALL, orphanRemoval = true)

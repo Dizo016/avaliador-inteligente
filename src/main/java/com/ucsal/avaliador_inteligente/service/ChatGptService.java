@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatGptService {
 
-    @Value("${chatgpt.api.key}")
+    @Value("${openai.api.key}")
     private String apikey;
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
@@ -33,16 +34,43 @@ public class ChatGptService {
         );
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+        int attempt = 0;
+        boolean success = false;
+        String responseMessage = "";
 
-        ResponseEntity<Map> response = restTemplate.postForEntity(API_URL, request, Map.class);
+        while (attempt < 5 && !success) {
+            try {
+                ResponseEntity<Map> response = restTemplate.postForEntity(API_URL, request, Map.class);
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    Map<String, Object> body = response.getBody();
+                    var choices = (java.util.List<Map<String, Object>>) body.get("choices");
+                    var message = (Map<String, Object>) choices.get(0).get("message");
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            Map<String, Object> body = response.getBody();
-            var choices = (java.util.List<Map<String, Object>>) body.get("choices");
-            var message = (Map<String, Object>) choices.get(0).get("message");
-            return message.get("conten").toString();
+                    responseMessage = message.get("content").toString();
+                    success = true; // Feedback gerado com sucesso
+                } else {
+                    throw new RuntimeException("Erro ao se comunicar com o ChatGPT: " + response.getStatusCode());
+                }
+            } catch (HttpClientErrorException e) {
+                if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                    // Esperar antes de tentar novamente
+                    System.out.println("Limite de requisições excedido. Tentando novamente...");
+                    try {
+                        Thread.sleep(10000);  // Aguardar 10 segundos antes de tentar novamente
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                    }
+                } else {
+                    throw new RuntimeException("Erro ao se comunicar com o ChatGPT", e);
+                }
+            }
+            attempt++;
         }
 
-        throw new RuntimeException("Erro ao se comunicar com o ChatGPT");
+        if (!success) {
+            responseMessage = "ChatGPT não pode ser conectado por falta de créditos ou excesso de requisições.";
+        }
+
+        return responseMessage;
     }
 }

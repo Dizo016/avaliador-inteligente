@@ -19,6 +19,14 @@ public class ChatGptFeedbackFactory implements FeedbackFactory {
         String prompt = construirPrompt(respostaAluno);
         String respostaIA = chatGptService.gerarFeedback(prompt);
 
+        if (respostaIA.contains("ChatGPT não pode ser conectado")) {
+            FeedbackIA feedback = new FeedbackIA();
+            feedback.setTexto(respostaIA);
+            feedback.setDataGeracao(LocalDateTime.now());
+            feedback.associarResposta(respostaAluno);
+            return feedback;
+        }
+
         FeedbackIA feedback = new FeedbackIA();
         feedback.setTexto(respostaIA);
         feedback.setDataGeracao(LocalDateTime.now());
