@@ -1,5 +1,6 @@
 package com.ucsal.avaliador_inteligente.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,5 +21,6 @@ public class Alternativa {
 
     @ManyToOne
     @JoinColumn(name = "questao_id")
+    @JsonIgnore
     private Questao questao;
 }

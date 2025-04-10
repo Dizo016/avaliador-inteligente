@@ -7,5 +7,6 @@ public class RespostaAlunoRequestDTO {
 
     private Long alunoId;
     private Long questaoId;
+    private Long provaId;
     private Integer respostaMarcada;
 }
