@@ -29,7 +29,7 @@ const LoginPage = () => {
         alert('Login bem-sucedido!');
         // Aqui você pode salvar o usuário no localStorage se quiser
         // localStorage.setItem('usuario', result);
-        navigate('/'); // redireciona para a tela inicial ou dashboard
+        navigate('/dashboard'); // redireciona para a tela inicial ou dashboard
       } else {
         alert('Credenciais inválidas: ' + result);
       }
