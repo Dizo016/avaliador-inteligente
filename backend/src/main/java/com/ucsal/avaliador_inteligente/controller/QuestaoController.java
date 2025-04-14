@@ -1,9 +1,6 @@
 package com.ucsal.avaliador_inteligente.controller;
 
-import com.ucsal.avaliador_inteligente.dto.AlternativaRequestDTO;
-import com.ucsal.avaliador_inteligente.dto.QuestaoDetalhadaDTO;
-import com.ucsal.avaliador_inteligente.dto.QuestaoRequestDTO;
-import com.ucsal.avaliador_inteligente.dto.RespostaCorretaDTO;
+import com.ucsal.avaliador_inteligente.dto.*;
 import com.ucsal.avaliador_inteligente.model.Questao;
 import com.ucsal.avaliador_inteligente.service.QuestaoService;
 import lombok.RequiredArgsConstructor;

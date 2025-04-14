@@ -1,14 +1,13 @@
 package com.ucsal.avaliador_inteligente.service;
 
-import com.ucsal.avaliador_inteligente.dto.AlternativaDTO;
-import com.ucsal.avaliador_inteligente.dto.ProvaRequestDTO;
-import com.ucsal.avaliador_inteligente.dto.QuestaoComAlternativasDTO;
+import com.ucsal.avaliador_inteligente.dto.*;
 import com.ucsal.avaliador_inteligente.model.Prova;
 import com.ucsal.avaliador_inteligente.repository.ProvaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,5 +32,35 @@ public class ProvaService {
         Prova prova = new Prova();
         prova.setTitulo(dto.getTitulo());
         return provaRepository.save(prova);
+    }
+
+    public List<ProvaResumoDTO> listarTodasAsProvas() {
+        return provaRepository.findAll().stream()
+                .map(prova -> new ProvaResumoDTO(prova.getId(), prova.getTitulo()))
+                .toList();
+    }
+
+    public ProvaComQuestoesDTO buscarProvaComQuestoes (Long id) {
+        Prova prova = provaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Prova não encontrada"));
+
+        ProvaComQuestoesDTO dto = new ProvaComQuestoesDTO();
+        dto.setId(prova.getId());
+        dto.setTitulo(prova.getTitulo());
+
+        List<QuestaoComAlternativasDTO> questoesDTO = prova.getQuestoes().stream().map(questao -> {
+            QuestaoComAlternativasDTO qdto = new QuestaoComAlternativasDTO();
+            qdto.setId(questao.getId());
+            qdto.setEnunciado(questao.getEnunciado());
+            qdto.setAlternativas(
+                    questao.getAlternativas()
+                            .stream()
+                            .map(alt -> new AlternativaDTO(alt.getId(), alt.getLetra(), alt.getTexto()))
+                            .collect(Collectors.toList()));
+            return qdto;
+        }).toList();
+
+        dto.setQuestoes(questoesDTO);
+        return dto;
     }
 }

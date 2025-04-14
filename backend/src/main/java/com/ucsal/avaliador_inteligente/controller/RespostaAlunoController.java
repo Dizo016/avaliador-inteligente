@@ -19,6 +19,7 @@ public class RespostaAlunoController {
 
     @PostMapping
     public ResponseEntity<RespostaAluno> responder(@RequestBody RespostaAlunoRequestDTO dto) {
+        System.out.println("RECEBIDO: " + dto);
         RespostaAluno resposta = respostaAlunoService.registrarResposta(dto);
         return ResponseEntity.ok(resposta);
     }
