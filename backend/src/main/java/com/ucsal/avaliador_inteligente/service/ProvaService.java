@@ -1,66 +1,78 @@
 package com.ucsal.avaliador_inteligente.service;
 
-import com.ucsal.avaliador_inteligente.dto.*;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.ucsal.avaliador_inteligente.dto.ProvaRequestDTO;
+import com.ucsal.avaliador_inteligente.model.Alternativa;
 import com.ucsal.avaliador_inteligente.model.Prova;
+import com.ucsal.avaliador_inteligente.model.Questao;
 import com.ucsal.avaliador_inteligente.repository.ProvaRepository;
+import com.ucsal.avaliador_inteligente.repository.QuestaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProvaService {
 
     private final ProvaRepository provaRepository;
+    private final QuestaoRepository questaoRepository;
 
-    public List<QuestaoComAlternativasDTO> listarQuestoesDaProva(Long provaId) {
-        Prova prova = provaRepository.findById(provaId)
-                .orElseThrow(() -> new RuntimeException("Prova não encontrada"));
-
-        return prova.getQuestoes().stream().map(q -> {
-            List<AlternativaDTO> alternativas = q.getAlternativas().stream()
-                    .map(a -> new AlternativaDTO(a.getId(), a.getLetra(), a.getTexto()))
-                    .toList();
-
-            return new QuestaoComAlternativasDTO(q.getId(), q.getEnunciado(), alternativas);
-        }).toList();
-    }
-
-    public Prova cadastrarProva(ProvaRequestDTO dto) {
+    public void criar(ProvaRequestDTO dto) {
         Prova prova = new Prova();
         prova.setTitulo(dto.getTitulo());
-        return provaRepository.save(prova);
+        prova.setDataCriacao(LocalDate.now());
+
+        List<Questao> questoesSelecionadas = questaoRepository.findAllById(dto.getQuestoesIds());
+        for (Questao q : questoesSelecionadas) {
+            q.setProva(prova); // mantém o vínculo bidirecional
+        }
+
+        prova.setQuestoes(questoesSelecionadas);
+        provaRepository.save(prova);
     }
 
-    public List<ProvaResumoDTO> listarTodasAsProvas() {
-        return provaRepository.findAll().stream()
-                .map(prova -> new ProvaResumoDTO(prova.getId(), prova.getTitulo()))
-                .toList();
+    public List<Prova> listarTodas() {
+        return provaRepository.findAll();
     }
 
-    public ProvaComQuestoesDTO buscarProvaComQuestoes (Long id) {
-        Prova prova = provaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prova não encontrada"));
+    public Prova buscarPorId(Long id) {
+        return provaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Prova não encontrada com ID: " + id));
+    }
 
-        ProvaComQuestoesDTO dto = new ProvaComQuestoesDTO();
-        dto.setId(prova.getId());
-        dto.setTitulo(prova.getTitulo());
+    public byte[] gerarPdfProva(Long provaId) {
+        Prova prova = buscarPorId(provaId);
 
-        List<QuestaoComAlternativasDTO> questoesDTO = prova.getQuestoes().stream().map(questao -> {
-            QuestaoComAlternativasDTO qdto = new QuestaoComAlternativasDTO();
-            qdto.setId(questao.getId());
-            qdto.setEnunciado(questao.getEnunciado());
-            qdto.setAlternativas(
-                    questao.getAlternativas()
-                            .stream()
-                            .map(alt -> new AlternativaDTO(alt.getId(), alt.getLetra(), alt.getTexto()))
-                            .collect(Collectors.toList()));
-            return qdto;
-        }).toList();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(baos);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document doc = new Document(pdf);
 
-        dto.setQuestoes(questoesDTO);
-        return dto;
+        doc.add(new Paragraph("📄 Prova: " + prova.getTitulo()).setBold().setFontSize(16));
+
+        int num = 1;
+        for (Questao questao : prova.getQuestoes()) {
+            doc.add(new Paragraph(num + ". " + questao.getEnunciado()).setBold());
+
+            char letra = 'A';
+            for (Alternativa alt : questao.getAlternativas()) {
+                String textoAlt = letra + ") " + alt.getDescricao();
+                doc.add(new Paragraph(textoAlt));
+                letra++;
+            }
+
+            doc.add(new Paragraph("\n"));
+            num++;
+        }
+
+        doc.close();
+        return baos.toByteArray();
     }
 }

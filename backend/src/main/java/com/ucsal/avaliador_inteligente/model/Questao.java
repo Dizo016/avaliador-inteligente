@@ -19,12 +19,12 @@ public class Questao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String enunciado;
-    private Integer respostaCorreta;
 
-    @ManyToOne
-    @JoinColumn(name = "criador_id")
-    private Usuario criador;
+    private String enunciado;
+
+    private String tema;         // Ex: "Geografia"
+    private String origem;       // Ex: "ENEM 2018"
+    private String competencia;  // Ex: "H19 - Analisar problemas ambientais"
 
     @ManyToOne
     @JoinColumn(name = "prova_id")
@@ -33,10 +33,6 @@ public class Questao {
 
     @OneToMany(mappedBy = "questao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Alternativa> alternativas = new ArrayList<>();
-
-    public boolean isCorreta(int respostaAluno) {
-        return this.respostaCorreta != null && this.respostaCorreta == respostaAluno;
-    }
 
     public void adicionarAlternativa(Alternativa alternativa) {
         alternativa.setQuestao(this);

@@ -1,6 +1,6 @@
 package com.ucsal.avaliador_inteligente.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,11 +16,13 @@ public class Alternativa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String letra;
-    private String texto;
+
+    private String descricao;
+
+    private boolean correta;
 
     @ManyToOne
     @JoinColumn(name = "questao_id")
-    @JsonIgnore
+    @JsonBackReference
     private Questao questao;
 }

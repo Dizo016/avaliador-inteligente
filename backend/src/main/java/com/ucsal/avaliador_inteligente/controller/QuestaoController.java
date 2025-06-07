@@ -1,11 +1,12 @@
 package com.ucsal.avaliador_inteligente.controller;
 
-import com.ucsal.avaliador_inteligente.dto.*;
 import com.ucsal.avaliador_inteligente.model.Questao;
 import com.ucsal.avaliador_inteligente.service.QuestaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/questoes")
@@ -14,33 +15,19 @@ public class QuestaoController {
 
     private final QuestaoService questaoService;
 
-    @GetMapping("/{questaoId}")
-    public ResponseEntity<QuestaoDetalhadaDTO> buscarPorId(@PathVariable Long questaoId) {
-        QuestaoDetalhadaDTO dto = questaoService.buscarPorId(questaoId);
-        return ResponseEntity.ok(dto);
+    @GetMapping("/enem")
+    public ResponseEntity<List<Questao>> buscarPorTema(@RequestParam String tema) {
+        List<Questao> questoes = questaoService.buscarPorTema(tema);
+        return ResponseEntity.ok(questoes);
     }
 
-    @PostMapping
-    public ResponseEntity<Questao> cadastrar(@RequestBody QuestaoRequestDTO dto) {
-        Questao questao = questaoService.cadastrarQuestao(dto);
-        return ResponseEntity.ok(questao);
+    @GetMapping
+    public ResponseEntity<List<Questao>> listarTodas() {
+        return ResponseEntity.ok(questaoService.listarTodas());
     }
 
-    @PostMapping("/{questaoId}/alternativas")
-    public ResponseEntity<Void> adicionarAlternativa(
-            @PathVariable Long questaoId,
-            @RequestBody AlternativaRequestDTO dto
-    ) {
-        questaoService.adicionarAlternativa(questaoId, dto);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/{questaoId}/resposta-correta")
-    public ResponseEntity<Void> definirRespostaCorreta(
-            @PathVariable Long questaoId,
-            @RequestBody RespostaCorretaDTO dto
-    ) {
-        questaoService.definirRespostaCorreta(questaoId, dto.getIndice());
-        return  ResponseEntity.ok().build();
+    @GetMapping("/{id}")
+    public ResponseEntity<Questao> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(questaoService.buscarPorId(id));
     }
 }
