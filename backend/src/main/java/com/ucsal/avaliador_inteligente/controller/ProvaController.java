@@ -42,4 +42,25 @@ public class ProvaController {
         Prova prova = provaService.gerarProvaComGabarito(dto.getTitulo(), dto.getTema(), criador);
         return ResponseEntity.status(HttpStatus.CREATED).body(prova);
     }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> baixarPdfProva(@PathVariable Long id) {
+        byte[] pdf = provaService.gerarPdfProva(id);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=prova.pdf")
+                .header("Content-Type", "application/pdf")
+                .body(pdf);
+    }
+
+    @GetMapping("/{id}/gabarito/pdf")
+    public ResponseEntity<byte[]> baixarPdfGabarito(@PathVariable Long id) {
+        Prova prova = provaService.buscarPorId(id);
+        byte[] pdf = prova.getGabarito().getArquivoPdf();
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=gabarito.pdf")
+                .header("Content-Type", "application/pdf")
+                .body(pdf);
+    }
+
 }
