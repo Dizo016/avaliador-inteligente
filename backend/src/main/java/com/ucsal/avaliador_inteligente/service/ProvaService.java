@@ -8,13 +8,16 @@ import com.ucsal.avaliador_inteligente.dto.ProvaRequestDTO;
 import com.ucsal.avaliador_inteligente.model.Alternativa;
 import com.ucsal.avaliador_inteligente.model.Prova;
 import com.ucsal.avaliador_inteligente.model.Questao;
+import com.ucsal.avaliador_inteligente.model.Usuario;
 import com.ucsal.avaliador_inteligente.repository.ProvaRepository;
 import com.ucsal.avaliador_inteligente.repository.QuestaoRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +26,8 @@ public class ProvaService {
 
     private final ProvaRepository provaRepository;
     private final QuestaoRepository questaoRepository;
+    private final IAQuestaoService iaQuestaoService;
+    private final GabaritoService gabaritoService;
 
     public void criar(ProvaRequestDTO dto) {
         Prova prova = new Prova();
@@ -74,5 +79,36 @@ public class ProvaService {
 
         doc.close();
         return baos.toByteArray();
+    }
+
+    @Transactional
+    public Prova gerarProvaComGabarito(String titulo, String tema, Usuario criador) {
+        // Gerar questões via IA
+        List<Questao> questoes = iaQuestaoService.buscarQuestoesPorTema(tema);
+
+        // Criar prova
+        Prova prova = new Prova();
+        prova.setTitulo(titulo);
+        prova.setDataCriacao(LocalDate.now());
+        prova.setCriador(criador);
+        prova.setQuestoes(new ArrayList<>());
+
+        for (Questao questao : questoes) {
+            prova.adicionarQuestao(questao); // já vincula a prova na questão
+        }
+
+        // Gerar PDF da prova (sem respostas)
+        byte[] pdfProva = ProvaPdfGenerator.gerarPdf(prova);
+        prova.setArquivoPdf(pdfProva);
+
+        // Persistir prova no banco
+        Prova provaSalva = provaRepository.save(prova);
+
+        // Gerar gabarito vinculado à prova
+        Gabarito gabarito = gabaritoService.gerarGabaritoParaProva(provaSalva);
+
+        // Vincular gabarito à prova e salvar novamente
+        provaSalva.setGabarito(gabarito);
+        return provaRepository.save(provaSalva);
     }
 }

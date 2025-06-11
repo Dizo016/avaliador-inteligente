@@ -24,7 +24,6 @@ public class Questao {
 
     private String tema;         // Ex: "Geografia"
     private String origem;       // Ex: "ENEM 2018"
-    private String competencia;  // Ex: "H19 - Analisar problemas ambientais"
 
     @ManyToOne
     @JoinColumn(name = "prova_id")

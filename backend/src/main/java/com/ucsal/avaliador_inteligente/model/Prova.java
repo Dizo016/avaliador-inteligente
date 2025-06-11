@@ -20,8 +20,14 @@ public class Prova {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String titulo;
+
     private LocalDate dataCriacao;
+
+    @Lob
+    @Column(name = "arquivo_pdf")
+    private byte[] arquivoPdf;
 
     @ManyToOne
     @JoinColumn(name = "criador_id")
@@ -30,6 +36,9 @@ public class Prova {
     @OneToMany(mappedBy = "prova", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Questao> questoes = new ArrayList<>();
+
+    @OneToOne(mappedBy = "prova", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Gabarito gabarito;
 
     public void adicionarQuestao(Questao questao) {
         questao.setProva(this);

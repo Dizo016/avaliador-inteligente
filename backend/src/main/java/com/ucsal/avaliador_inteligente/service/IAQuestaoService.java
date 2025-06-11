@@ -28,19 +28,22 @@ public class IAQuestaoService {
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper mapper = new ObjectMapper();
 
-        String prompt = "Gere 3 questões objetivas de múltipla escolha no estilo do ENEM sobre o tema \"" + tema +
-                "\". Cada questão deve conter:\n" +
-                "- enunciado\n- alternativas (A a E)\n- indicar qual é a correta\n" +
-                "- tema e origem\nFormate a resposta como um array JSON com a seguinte estrutura:\n" +
-                "[{\n" +
-                "  \"enunciado\": \"...\",\n" +
-                "  \"alternativas\": [\n" +
-                "    {\"descricao\": \"...\", \"correta\": false},\n" +
-                "    {\"descricao\": \"...\", \"correta\": true}, ...\n" +
-                "  ],\n" +
-                "  \"tema\": \"...\",\n" +
-                "  \"origem\": \"ENEM 2019\"\n" +
-                "}]";
+        String prompt = "Gere 5 questões objetivas de múltipla escolha no estilo do ENEM sobre o tema: \"" + tema + "\". " +
+                "Formate a resposta como um array JSON no seguinte modelo:\n" +
+                "[\n" +
+                "  {\n" +
+                "    \"enunciado\": \"Texto da pergunta...\",\n" +
+                "    \"tema\": \"Tema central da questão\",\n" +
+                "    \"origem\": \"ENEM 2019\",\n" +
+                "    \"alternativas\": [\n" +
+                "      {\"descricao\": \"Texto da alternativa A\", \"correta\": false},\n" +
+                "      {\"descricao\": \"Texto da alternativa B\", \"correta\": true},\n" +
+                "      {\"descricao\": \"Texto da alternativa C\", \"correta\": false},\n" +
+                "      {\"descricao\": \"Texto da alternativa D\", \"correta\": false},\n" +
+                "      {\"descricao\": \"Texto da alternativa E\", \"correta\": false}\n" +
+                "    ]\n" +
+                "  }\n" +
+                "]";
 
         Map<String, Object> body = Map.of(
                 "model", "llama3-8b-8192",
