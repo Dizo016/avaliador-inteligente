@@ -1,6 +1,7 @@
 package com.ucsal.avaliador_inteligente.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,8 +23,8 @@ public class Questao {
 
     private String enunciado;
 
-    private String tema;         // Ex: "Geografia"
-    private String origem;       // Ex: "ENEM 2018"
+    private String tema;
+    private String origem;
 
     @ManyToOne
     @JoinColumn(name = "prova_id")
@@ -31,6 +32,7 @@ public class Questao {
     private Prova prova;
 
     @OneToMany(mappedBy = "questao", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Alternativa> alternativas = new ArrayList<>();
 
     public void adicionarAlternativa(Alternativa alternativa) {

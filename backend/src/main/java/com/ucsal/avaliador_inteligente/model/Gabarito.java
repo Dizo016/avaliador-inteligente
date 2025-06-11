@@ -1,5 +1,6 @@
 package com.ucsal.avaliador_inteligente.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,5 +27,6 @@ public class Gabarito {
 
     @OneToOne
     @JoinColumn(name = "prova_id", unique = true)
+    @JsonIgnore
     private Prova prova;
 }

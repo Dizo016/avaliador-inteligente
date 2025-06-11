@@ -5,12 +5,15 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.ucsal.avaliador_inteligente.dto.ProvaRequestDTO;
+import com.ucsal.avaliador_inteligente.dto.ProvaResumoDTO;
 import com.ucsal.avaliador_inteligente.model.Alternativa;
+import com.ucsal.avaliador_inteligente.model.Gabarito;
 import com.ucsal.avaliador_inteligente.model.Prova;
 import com.ucsal.avaliador_inteligente.model.Questao;
 import com.ucsal.avaliador_inteligente.model.Usuario;
 import com.ucsal.avaliador_inteligente.repository.ProvaRepository;
 import com.ucsal.avaliador_inteligente.repository.QuestaoRepository;
+import com.ucsal.avaliador_inteligente.util.ProvaPdfGenerator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +39,7 @@ public class ProvaService {
 
         List<Questao> questoesSelecionadas = questaoRepository.findAllById(dto.getQuestoesIds());
         for (Questao q : questoesSelecionadas) {
-            q.setProva(prova); // mantém o vínculo bidirecional
+            q.setProva(prova);
         }
 
         prova.setQuestoes(questoesSelecionadas);
@@ -45,6 +48,17 @@ public class ProvaService {
 
     public List<Prova> listarTodas() {
         return provaRepository.findAll();
+    }
+
+    public List<ProvaResumoDTO> listarTodasResumidas() {
+        return provaRepository.findAll().stream()
+                .map(p -> new ProvaResumoDTO(
+                        p.getId(),
+                        p.getTitulo(),
+                        p.getDataCriacao(),
+                        p.getCriador() != null ? p.getCriador().getNome() : "Desconhecido"
+                ))
+                .toList();
     }
 
     public Prova buscarPorId(Long id) {
@@ -60,7 +74,7 @@ public class ProvaService {
         PdfDocument pdf = new PdfDocument(writer);
         Document doc = new Document(pdf);
 
-        doc.add(new Paragraph("📄 Prova: " + prova.getTitulo()).setBold().setFontSize(16));
+        doc.add(new Paragraph("Prova: " + prova.getTitulo()).setBold().setFontSize(16));
 
         int num = 1;
         for (Questao questao : prova.getQuestoes()) {
@@ -73,7 +87,7 @@ public class ProvaService {
                 letra++;
             }
 
-            doc.add(new Paragraph("\n"));
+            doc.add(new Paragraph(""));
             num++;
         }
 
@@ -83,32 +97,42 @@ public class ProvaService {
 
     @Transactional
     public Prova gerarProvaComGabarito(String titulo, String tema, Usuario criador) {
-        // Gerar questões via IA
-        List<Questao> questoes = iaQuestaoService.buscarQuestoesPorTema(tema);
+        List<Questao> questoes;
+        try {
+            questoes = iaQuestaoService.buscarQuestoesPorTema(tema);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar questões com a IA", e);
+        }
 
-        // Criar prova
+        if (questoes == null || questoes.isEmpty()) {
+            throw new RuntimeException("Nenhuma questão retornada pela IA");
+        }
+
         Prova prova = new Prova();
         prova.setTitulo(titulo);
         prova.setDataCriacao(LocalDate.now());
         prova.setCriador(criador);
         prova.setQuestoes(new ArrayList<>());
 
+        Prova provaSalva = provaRepository.save(prova); // salva antes de associar
+
         for (Questao questao : questoes) {
-            prova.adicionarQuestao(questao); // já vincula a prova na questão
+            if (questao != null) {
+                questao.setProva(provaSalva); // agora a prova tem ID
+                provaSalva.adicionarQuestao(questao);
+            }
         }
 
-        // Gerar PDF da prova (sem respostas)
-        byte[] pdfProva = ProvaPdfGenerator.gerarPdf(prova);
-        prova.setArquivoPdf(pdfProva);
+        byte[] pdfProva = ProvaPdfGenerator.gerarPdf(provaSalva);
+        provaSalva.setArquivoPdf(pdfProva);
 
-        // Persistir prova no banco
-        Prova provaSalva = provaRepository.save(prova);
+        Prova provaComQuestoes = provaRepository.save(provaSalva); // salva com as questões vinculadas
 
-        // Gerar gabarito vinculado à prova
-        Gabarito gabarito = gabaritoService.gerarGabaritoParaProva(provaSalva);
+        Gabarito gabarito = gabaritoService.gerarGabaritoParaProva(provaComQuestoes);
+        provaComQuestoes.setGabarito(gabarito);
 
-        // Vincular gabarito à prova e salvar novamente
-        provaSalva.setGabarito(gabarito);
-        return provaRepository.save(provaSalva);
+        return provaRepository.save(provaComQuestoes);
     }
+
+
 }

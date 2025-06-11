@@ -30,8 +30,11 @@ public class GabaritoPdfGenerator {
 
                 char letra = 'A';
                 for (Alternativa alt : questao.getAlternativas()) {
-                    String marcador = alt.isCorreta() ? "✔ " : "  ";
-                    document.add(new Paragraph(marcador + letra++ + ") " + alt.getDescricao()));
+                    String textoAlternativa = letra++ + ") " + alt.getDescricao();
+                    if (Boolean.TRUE.equals(alt.getCorreta())) {
+                        textoAlternativa += "  (CORRETA)";
+                    }
+                    document.add(new Paragraph(textoAlternativa));
                 }
 
                 document.add(new Paragraph(" "));

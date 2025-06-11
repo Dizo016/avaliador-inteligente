@@ -24,7 +24,7 @@ public class IAQuestaoService {
 
     private final String GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-    public List<Questao> buscarQuestoesPorTema(String tema) throws Exception {
+    public List<Questao> buscarQuestoesPorTema(String tema) {
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper mapper = new ObjectMapper();
 
@@ -58,39 +58,46 @@ public class IAQuestaoService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(GROQ_URL, entity, String.class);
 
-        String content = mapper.readTree(response.getBody())
-                .get("choices").get(0).get("message").get("content").asText();
-
-        int indexInicioJson = content.indexOf("[");
-        if (indexInicioJson == -1) {
-            throw new RuntimeException("Resposta da IA não contém JSON válido: " + content);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Erro na chamada da IA: " + response.getStatusCode());
         }
 
-        String jsonLimpo = content.substring(indexInicioJson).trim();
-        JsonNode questoesJson = mapper.readTree(jsonLimpo);
-        List<Questao> questoesSalvas = new ArrayList<>();
+        try {
+            String content = new ObjectMapper().readTree(response.getBody())
+                    .get("choices").get(0).get("message").get("content").asText();
 
-        for (JsonNode q : questoesJson) {
-            Questao questao = new Questao();
-            questao.setId(null);
-            questao.setEnunciado(q.get("enunciado").asText());
-            questao.setTema(q.get("tema").asText());
-            questao.setOrigem(q.get("origem").asText());
-
-            List<Alternativa> alternativas = new ArrayList<>();
-            for (JsonNode alt : q.get("alternativas")) {
-                Alternativa a = new Alternativa();
-                a.setId(null);
-                a.setDescricao(alt.get("descricao").asText());
-                a.setCorreta(alt.get("correta").asBoolean());
-                a.setQuestao(questao);
-                alternativas.add(a);
+            int indexInicioJson = content.indexOf("[");
+            if (indexInicioJson == -1) {
+                throw new RuntimeException("Resposta da IA não contém JSON válido: " + content);
             }
 
-            questao.setAlternativas(alternativas);
-            questoesSalvas.add(questaoRepository.save(questao));
-        }
+            String jsonLimpo = content.substring(indexInicioJson).trim();
+            JsonNode questoesJson = mapper.readTree(jsonLimpo);
+            List<Questao> questoesSalvas = new ArrayList<>();
 
-        return questoesSalvas;
+            for (JsonNode q : questoesJson) {
+                Questao questao = new Questao();
+                questao.setEnunciado(q.get("enunciado").asText());
+                questao.setTema(q.get("tema").asText());
+                questao.setOrigem(q.get("origem").asText());
+
+                List<Alternativa> alternativas = new ArrayList<>();
+                for (JsonNode alt : q.get("alternativas")) {
+                    Alternativa a = new Alternativa();
+                    a.setDescricao(alt.get("descricao").asText());
+                    a.setCorreta(alt.get("correta").asBoolean());
+                    a.setQuestao(questao);
+                    alternativas.add(a);
+                }
+
+                questao.setAlternativas(alternativas);
+                questoesSalvas.add(questaoRepository.save(questao));
+            }
+
+            return questoesSalvas;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao processar a resposta da IA", e);
+        }
     }
 }

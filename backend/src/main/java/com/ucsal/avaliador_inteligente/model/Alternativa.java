@@ -1,9 +1,10 @@
 package com.ucsal.avaliador_inteligente.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -19,10 +20,10 @@ public class Alternativa {
 
     private String descricao;
 
-    private boolean correta;
+    private Boolean correta;
 
     @ManyToOne
     @JoinColumn(name = "questao_id")
-    @JsonBackReference
+    @JsonIgnore
     private Questao questao;
 }

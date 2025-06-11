@@ -1,7 +1,9 @@
 package com.ucsal.avaliador_inteligente.controller;
 
 import com.ucsal.avaliador_inteligente.dto.ProvaRequestDTO;
+import com.ucsal.avaliador_inteligente.dto.ProvaIARequestDTO;
 import com.ucsal.avaliador_inteligente.model.Prova;
+import com.ucsal.avaliador_inteligente.model.Usuario;
 import com.ucsal.avaliador_inteligente.service.ProvaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,5 +33,13 @@ public class ProvaController {
     @GetMapping("/{id}")
     public ResponseEntity<Prova> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(provaService.buscarPorId(id));
+    }
+
+    @PostMapping("/gerar-ia")
+    public ResponseEntity<Prova> gerarProvaComIA(@RequestBody ProvaIARequestDTO dto) {
+        Usuario criador = new Usuario();
+        criador.setId(dto.getCriadorId());
+        Prova prova = provaService.gerarProvaComGabarito(dto.getTitulo(), dto.getTema(), criador);
+        return ResponseEntity.status(HttpStatus.CREATED).body(prova);
     }
 }
