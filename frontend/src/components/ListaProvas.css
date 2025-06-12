@@ -1,0 +1,77 @@
+/* src/components/ListaProvas.css */
+
+.provas-container {
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 25px;
+    max-width: 800px;
+    margin: 80px auto;
+    border: 2px solid #c8cccb;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+  
+  h3 {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    color: #1c1c1c;
+    text-align: center;
+  }
+  
+  .mensagem-erro {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .mensagem-vazia {
+    font-size: 1rem;
+    text-align: center;
+    color: #777;
+  }
+  
+  .lista-provas {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .prova-item {
+    border: 1px solid #cbcccb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .prova-titulo {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .prova-criador {
+    margin: 8px 0;
+    font-size: 0.95rem;
+    color: #555;
+  }
+  
+  .botoes-prova {
+    margin-top: 12px;
+  }
+  
+  .botoes-prova button {
+    background-color: #008b75;
+    color: white;
+    padding: 10px 18px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .botoes-prova button:hover {
+    background-color: #007060;
+  }
+  

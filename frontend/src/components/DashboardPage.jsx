@@ -1,46 +1,39 @@
-// src/components/DashboardPage.jsx
-import React from 'react';
+import React, { useState } from 'react';
+import CriarProvaIA from './CriarProvaIA';
+import ListaProvas from './ListaProvas';
 import { useNavigate } from 'react-router-dom';
-import './DashboardPage.css';
+import './Header.css';
 
 const DashboardPage = () => {
+  const [abaAtiva, setAbaAtiva] = useState('criar');
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem('usuarioLogado');
+    navigate('/login');
+  };
+
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <h1>Avaliador Inteligente</h1>
-        <button className="logout-button" onClick={() => navigate('/login')}>
-          Sair
-        </button>
+    <div>
+      <header className="header-container">
+        <h2>Prova Fácil</h2>
+
+        <div className="header-botoes">
+          <button className="btn-criar" onClick={() => setAbaAtiva('criar')}>
+            Criar Prova com IA
+          </button>
+          <button className="btn-listar" onClick={() => setAbaAtiva('listar')}>
+            Mostrar Provas Já Criadas
+          </button>
+          <button className="btn-sair" onClick={handleLogout}>
+            Sair
+          </button>
+        </div>
       </header>
 
-      <h2 className="dashboard-welcome">Bem-vindo!</h2>
-
-      <div className="dashboard-grid">
-        <div className="dashboard-card">
-          <h3>📝 Responder Provas</h3>
-          <p>Descubra novos desafios e teste seu conhecimento.</p>
-          <button onClick={() => navigate('/provas')}>Acessar</button>
-        </div>
-
-        <div className="dashboard-card">
-          <h3>📋 Ver Feedbacks</h3>
-          <p>Revise os comentários gerados pela IA sobre suas respostas.</p>
-          <button onClick={() => navigate('/feedbacks')}>Acessar</button>
-        </div>
-
-        <div className="dashboard-card">
-          <h3>⭐ Avaliar Feedbacks</h3>
-          <p>Ajude a melhorar dando sua nota aos feedbacks recebidos.</p>
-          <button onClick={() => navigate('/avaliar-feedbacks')}>Acessar</button>
-        </div>
-
-        <div className="dashboard-card">
-          <h3>📚 Provas Respondidas</h3>
-          <p>Consulte suas respostas anteriores e acompanhe sua evolução.</p>
-          <button onClick={() => navigate('/provas/concluidas')}>Acessar</button>
-        </div>
+      <div style={{ padding: '30px' }}>
+        {abaAtiva === 'criar' && <CriarProvaIA />}
+        {abaAtiva === 'listar' && <ListaProvas />}
       </div>
     </div>
   );

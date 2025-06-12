@@ -1,0 +1,50 @@
+.header-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #008b75;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-botoes {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .header-botoes button {
+    padding: 8px 14px;
+    border: 1px solid #c8cccb;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-botoes .btn-criar,
+  .header-botoes .btn-listar {
+    background-color: white;
+    color: #008b75;
+  }
+  
+  .header-botoes .btn-criar:hover,
+  .header-botoes .btn-listar:hover {
+    background-color: #f2f2f2;
+  }
+  
+  .header-botoes .btn-sair {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .header-botoes .btn-sair:hover {
+    background-color: #c0392b;
+  }
+  

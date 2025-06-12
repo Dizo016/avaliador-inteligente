@@ -10,7 +10,7 @@ const CadastroPage = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [tipoUsuario, setTipoUsuario] = useState('ALUNO');
+  const [tipoUsuario, setTipoUsuario] = useState('PROFESSOR');
 
   const handleSubmit = async () => {
     if (!nome || !email || !senha || !confirmarSenha) {
@@ -62,8 +62,8 @@ const CadastroPage = () => {
 
         <label>Tipo de Usuário</label>
         <select value={tipoUsuario} onChange={(e) => setTipoUsuario(e.target.value)}>
-          <option value="ALUNO">Aluno</option>
           <option value="PROFESSOR">Professor</option>
+          <option value="ADMIN">Administrador</option>
         </select>
 
         <button className="cadastro-button" onClick={handleSubmit}>Cadastrar</button>

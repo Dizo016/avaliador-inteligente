@@ -14,13 +14,14 @@ const HomePage = () => {
   return (
     <div className="text-container">
       <h1 className="title">
-        AVALIADOR INTELIGENTE
+        PROVA FÁCIL
         <img src="/avaliador-inteligente.svg" alt="Ícone de livro" className="icon" />
       </h1>
 
       <p className="description">
-        Uma plataforma educacional inovadora que utiliza <strong>inteligência artificial</strong> para fornecer feedback automatizado em questões de múltipla escolha.
-      </p>
+  Sistema inteligente para geração automatizada de provas no modelo ENEM, com base em temas definidos e gabarito integrado.
+</p>
+
 
       <button className="start-btn" onClick={handleStart}>Acessar Plataforma</button>
       <p className="read-more">Leia mais...</p>

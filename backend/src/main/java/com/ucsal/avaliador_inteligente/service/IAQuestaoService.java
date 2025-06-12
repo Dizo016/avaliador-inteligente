@@ -29,7 +29,7 @@ public class IAQuestaoService {
         ObjectMapper mapper = new ObjectMapper();
 
         String prompt = "Gere 5 questões objetivas de múltipla escolha no estilo do ENEM sobre o tema: \"" + tema + "\". " +
-                "Formate a resposta como um array JSON no seguinte modelo:\n" +
+                "Formate a resposta como um array JSON (Não use texto solto nem markdown) no seguinte modelo:\n" +
                 "[\n" +
                 "  {\n" +
                 "    \"enunciado\": \"Texto da pergunta...\",\n" +
@@ -46,7 +46,7 @@ public class IAQuestaoService {
                 "]";
 
         Map<String, Object> body = Map.of(
-                "model", "llama3-8b-8192",
+                "model", "llama3-70b-8192",
                 "messages", List.of(Map.of("role", "user", "content", prompt)),
                 "temperature", 0.7
         );

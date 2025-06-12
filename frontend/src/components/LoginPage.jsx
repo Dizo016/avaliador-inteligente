@@ -1,3 +1,4 @@
+// src/components/LoginPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
@@ -20,22 +21,23 @@ const LoginPage = () => {
         body: JSON.stringify({ email, senha })
       });
 
-      const result = await response.text(); // pega a resposta como texto puro
+      const result = await response.json();
 
       console.log('Status:', response.status);
-      console.log('Resposta bruta:', result);
+      console.log('📥 Resposta JSON:', result);
 
       if (response.ok) {
-        alert('Login bem-sucedido!');
-        // Aqui você pode salvar o usuário no localStorage se quiser
-        // localStorage.setItem('usuario', result);
-        navigate('/dashboard'); // redireciona para a tela inicial ou dashboard
+        localStorage.removeItem('usuarioLogado'); // 🔄 remove antigo se houver
+        localStorage.setItem('usuarioLogado', JSON.stringify(result)); // ✅ salva corretamente
+        console.log('📦 Usuário salvo no localStorage como usuarioLogado:', result);
+        alert('✅ Login bem-sucedido!');
+        navigate('/dashboard'); // redireciona
       } else {
-        alert('Credenciais inválidas: ' + result);
+        alert('❌ Credenciais inválidas.');
       }
     } catch (error) {
       console.error('Erro ao logar:', error);
-      alert('Erro ao tentar logar. Tente novamente.');
+      alert('❌ Erro ao tentar logar. Tente novamente.');
     }
   };
 

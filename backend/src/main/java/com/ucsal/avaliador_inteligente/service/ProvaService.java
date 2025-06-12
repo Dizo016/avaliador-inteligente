@@ -13,6 +13,7 @@ import com.ucsal.avaliador_inteligente.model.Questao;
 import com.ucsal.avaliador_inteligente.model.Usuario;
 import com.ucsal.avaliador_inteligente.repository.ProvaRepository;
 import com.ucsal.avaliador_inteligente.repository.QuestaoRepository;
+import com.ucsal.avaliador_inteligente.repository.UsuarioRepository;
 import com.ucsal.avaliador_inteligente.util.ProvaPdfGenerator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProvaService {
 
+    private final UsuarioRepository usuarioRepository;
     private final ProvaRepository provaRepository;
     private final QuestaoRepository questaoRepository;
     private final IAQuestaoService iaQuestaoService;
@@ -96,7 +98,10 @@ public class ProvaService {
     }
 
     @Transactional
-    public Prova gerarProvaComGabarito(String titulo, String tema, Usuario criador) {
+    public Prova gerarProvaComGabarito(String titulo, String tema, Long criadorId) {
+        Usuario criador = usuarioRepository.findById(criadorId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
         List<Questao> questoes;
         try {
             questoes = iaQuestaoService.buscarQuestoesPorTema(tema);
@@ -114,11 +119,11 @@ public class ProvaService {
         prova.setCriador(criador);
         prova.setQuestoes(new ArrayList<>());
 
-        Prova provaSalva = provaRepository.save(prova); // salva antes de associar
+        Prova provaSalva = provaRepository.save(prova);
 
         for (Questao questao : questoes) {
             if (questao != null) {
-                questao.setProva(provaSalva); // agora a prova tem ID
+                questao.setProva(provaSalva);
                 provaSalva.adicionarQuestao(questao);
             }
         }
@@ -126,13 +131,14 @@ public class ProvaService {
         byte[] pdfProva = ProvaPdfGenerator.gerarPdf(provaSalva);
         provaSalva.setArquivoPdf(pdfProva);
 
-        Prova provaComQuestoes = provaRepository.save(provaSalva); // salva com as questões vinculadas
+        Prova provaComQuestoes = provaRepository.save(provaSalva);
 
         Gabarito gabarito = gabaritoService.gerarGabaritoParaProva(provaComQuestoes);
         provaComQuestoes.setGabarito(gabarito);
 
         return provaRepository.save(provaComQuestoes);
     }
+
 
 
 }
