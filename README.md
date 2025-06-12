@@ -1,46 +1,59 @@
-# 🧠 Avaliador Inteligente – TCC Universidade Católica
+# 📘 Prova Fácil
 
-Este repositório contém o projeto **Avaliador Inteligente**, desenvolvido como **Trabalho de Conclusão de Curso** (TCC) do curso de **Análise e Desenvolvimento de Sistemas** na **Universidade Católica**.
-
-O sistema propõe uma plataforma educacional que utiliza **Inteligência Artificial** para fornecer feedbacks automáticos em **questões de múltipla escolha**, permitindo que os alunos avaliem a qualidade das explicações. A proposta visa melhorar o processo de ensino-aprendizagem por meio de correções personalizadas e automatizadas.
+**Prova Fácil** é um sistema completo que permite a criação de provas escolares baseadas em questões reais do ENEM, com geração automática de gabarito e exportação em PDF. A aplicação foi desenvolvida com backend em **Java Spring Boot**, frontend em **React**, banco de dados **PostgreSQL** e integração com IA (via Groq) para busca inteligente de questões.
 
 ---
 
-## 🎯 Objetivos
+## ✅ Funcionalidades Principais
 
-- Automatizar o processo de correção de questões de múltipla escolha
-- Gerar feedback textual com auxílio de IA (ex: GPT)
-- Permitir que o aluno avalie a qualidade do feedback recebido
-- Armazenar os dados para análise pedagógica e melhoria do sistema
-
----
-
-## 🧰 Tecnologias utilizadas
-
-- **Java 17**
-- **Spring Boot 3**
-- **PostgreSQL**
-- **OpenAI API (GPT)** para geração de feedback
-- **HTML/CSS/JS** ou **React** (para a interface do usuário, se aplicável)
-- **Lombok**, **Spring Data JPA**, **REST APIs**
+- 🔍 Busca de questões reais do ENEM com base em um tema escolhido pelo professor.
+- 📝 Criação automática de provas com 5 questões e 4 alternativas cada.
+- 📄 Geração de gabarito vinculado à prova.
+- 📁 Exportação em PDF da prova e do gabarito.
+- 👤 Autenticação de usuários (Professor e Administrador).
+- 🌐 Integração entre frontend React e backend Spring Boot.
 
 ---
 
-## 📁 Estrutura do Projeto
+## 🛠️ Tecnologias Utilizadas
 
-```
-avaliador-inteligente/
-├── backend/                  
-│   └── src/main/java/...  
-├── frontend/                 
-├── docs/                
-│   ├── monografia.pdf
-│   ├── diagrama-er.png
-│   └── resumo.md
-├── .gitignore
-├── README.md
-└── LICENSE
-```
+### ⚙️ Backend
+- Java 17
+- Spring Boot
+- Spring Data JPA
+- PostgreSQL
+- Lombok
+- Groq API (Integração com LLM)
+
+### 💻 Frontend
+- React.js
+- React Router DOM
+- CSS Modules
+
+### 🧰 Ferramentas
+- Maven
+- IntelliJ IDEA
+- Postman
+- Git & GitHub
+
+---
+
+## 🗂️ Estrutura de Diretórios
+
+```bash
+prova-facil/
+├── backend/
+│   ├── src/main/java/com/ucsal/avaliador-inteligente/
+│   ├── resources/application.properties
+│   └── pom.xml
+├── frontend/
+│   ├── public/
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       └── App.jsx
+└── README.md
+
 
 ---
 
@@ -53,28 +66,29 @@ avaliador-inteligente/
 
 ---
 
-## 🚀 Como rodar o projeto
-
-1. Clone este repositório:
-   ```bash
-   git clone git@github.com:Dizo016/avaliador-inteligente.git
-   cd avaliador-inteligente
-   ```
-
-2. Configure o `application.properties` com os dados do seu banco PostgreSQL.
-
-3. Gere sua chave da OpenAI e configure no backend como variável de ambiente:
-   ```
-   OPENAI_API_KEY=suachaveaqui
-   ```
-
-4. Rode o projeto com:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-
----
-
-## 📄 Licença
-
-Este projeto é acadêmico e livre para fins educacionais. Direitos reservados aos autores.
+   ## 🚀 Como rodar o projeto
+   
+   1. Clone este repositório:
+      ```bash
+      git clone git@github.com:Dizo016/avaliador-inteligente.git
+      cd avaliador-inteligente
+      ```
+   
+   2. Configure o `application.properties` com os dados do seu banco PostgreSQL.
+   
+   3. Gere sua chave da GroqIA e configure no backend como variável de ambiente:
+      ```
+     # Chave da API Groq
+   groq.api.key=
+      ```
+   
+   4. Rode o projeto com:
+      ```bash
+      ./mvnw spring-boot:run
+      ```
+   
+   ---
+   
+   ## 📄 Licença
+   
+   Este projeto é acadêmico e livre para fins educacionais. Direitos reservados aos autores.
