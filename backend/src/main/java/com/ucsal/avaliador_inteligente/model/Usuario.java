@@ -27,7 +27,4 @@ public class Usuario {
         return this.getTipoUsuario() == TipoUsuario.PROFESSOR;
     }
 
-    public boolean isAluno() {
-        return this.getTipoUsuario() == TipoUsuario.ALUNO;
-    }
 }
